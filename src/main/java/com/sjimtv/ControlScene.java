@@ -1,17 +1,14 @@
 package com.sjimtv;
 
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Slider;
-import javafx.scene.input.MouseEvent;
 import uk.co.caprica.vlcj.player.base.AudioApi;
 import uk.co.caprica.vlcj.player.base.ControlsApi;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 import java.net.URL;
-import java.util.EventListener;
 import java.util.ResourceBundle;
 
 public class ControlScene implements Initializable {
@@ -29,7 +26,7 @@ public class ControlScene implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        mediaPlayer = App.vlcPlayerManager.getEmbeddedMediaPlayer();
+        mediaPlayer = App.mediaManager.getEmbeddedMediaPlayer();
         mediaController = mediaPlayer.controls();
         audioController = mediaPlayer.audio();
 

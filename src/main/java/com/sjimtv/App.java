@@ -18,7 +18,7 @@ public class App extends Application {
     private static Scene scene;
     OutputStageManager outputStageManager;
 
-    public static VLCPlayerManager vlcPlayerManager;
+    public static MediaManager mediaManager;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -27,7 +27,7 @@ public class App extends Application {
 
         showControlStage(stage);
 
-        Server serverThread = new Server();
+        Server serverThread = new Server(new MessageListener(mediaManager));
         serverThread.start();
     }
 
@@ -47,7 +47,7 @@ public class App extends Application {
     }
 
     private void initializeVLCPlayer(ImageView outputView){
-        vlcPlayerManager = new VLCPlayerManager(outputView);
+        mediaManager = new MediaManager(outputView);
         //vlcPlayerManager.playTestClip(TestCases.testMediaClip, "Media", false);
     }
 
@@ -71,7 +71,7 @@ public class App extends Application {
     public void stop() throws Exception {
         super.stop();
 
-        vlcPlayerManager.release();
+        mediaManager.release();
         System.out.println("Released VLC Player \nExiting program..");
         System.exit(0);
     }
