@@ -8,6 +8,7 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -77,7 +78,9 @@ public class App extends Application {
     }
 
     public static void main(String[] args) {
-        launch();
+        //launch();
+
+        ShowFactory.fetchShow(new File("C:\\Users\\sjim_\\Documents\\Series\\Rick and Morty"));
     }
 
 }
