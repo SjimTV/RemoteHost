@@ -1,4 +1,4 @@
-package com.sjimtv;
+package com.sjimtv.mediaplayer;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;

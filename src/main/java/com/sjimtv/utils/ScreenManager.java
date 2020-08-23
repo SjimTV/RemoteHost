@@ -1,4 +1,4 @@
-package com.sjimtv;
+package com.sjimtv.utils;
 
 import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;

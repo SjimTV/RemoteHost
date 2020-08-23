@@ -1,5 +1,6 @@
-package com.sjimtv;
+package com.sjimtv.mediaplayer;
 
+import com.sjimtv.utils.ScreenManager;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;

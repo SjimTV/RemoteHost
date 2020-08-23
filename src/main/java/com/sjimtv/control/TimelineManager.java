@@ -1,5 +1,6 @@
-package com.sjimtv;
+package com.sjimtv.control;
 
+import com.sjimtv.control.ControlScene;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;

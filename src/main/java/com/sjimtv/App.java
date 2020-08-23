@@ -1,5 +1,13 @@
 package com.sjimtv;
 
+import com.sjimtv.mediaplayer.MediaManager;
+import com.sjimtv.mediaplayer.OutputStageManager;
+import com.sjimtv.server.MessageListener;
+import com.sjimtv.server.Server;
+import com.sjimtv.showStructure.Show;
+import com.sjimtv.filemanager.ShowFactory;
+import com.sjimtv.showStructure.Shows;
+import com.sjimtv.utils.JsonConverter;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -8,7 +16,6 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-import java.io.File;
 import java.io.IOException;
 
 /**
@@ -80,7 +87,9 @@ public class App extends Application {
     public static void main(String[] args) {
         //launch();
 
-        ShowFactory.fetchShow(new File("C:\\Users\\sjim_\\Documents\\Series\\Rick and Morty"));
+        Shows shows = ShowFactory.pullShows("C:\\Users\\sjim_\\Documents\\Series");
+
+        System.out.println(JsonConverter.convertShowsToJson(shows));
     }
 
 }

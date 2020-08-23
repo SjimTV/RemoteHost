@@ -1,5 +1,6 @@
-package com.sjimtv;
+package com.sjimtv.control;
 
+import com.sjimtv.App;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

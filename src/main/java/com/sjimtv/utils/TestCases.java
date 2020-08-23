@@ -1,4 +1,4 @@
-package com.sjimtv;
+package com.sjimtv.utils;
 
 public class TestCases {
 

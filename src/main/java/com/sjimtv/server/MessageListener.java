@@ -1,4 +1,6 @@
-package com.sjimtv;
+package com.sjimtv.server;
+
+import com.sjimtv.mediaplayer.MediaManager;
 
 public class MessageListener {
     private final MediaManager mediaManager;

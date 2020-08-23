@@ -1,4 +1,4 @@
-package com.sjimtv;
+package com.sjimtv.server;
 
 import java.io.*;
 import java.net.ServerSocket;
