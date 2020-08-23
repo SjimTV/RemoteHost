@@ -1,16 +1,18 @@
 package com.sjimtv.server;
 
+import com.sjimtv.App;
+import com.sjimtv.mediaplayer.MediaController;
 import com.sjimtv.mediaplayer.MediaManager;
 
 public class MessageListener {
-    private final MediaManager mediaManager;
+    private final MediaController mediaController;
 
-    public MessageListener(MediaManager mediaManager){
-        this.mediaManager = mediaManager;
+    public MessageListener(){
+        mediaController = App.mediaController;
     }
 
     public void getMessage(String message){
         System.out.println(message);
-        mediaManager.displayMessage(message);
+        mediaController.displayMessage(message);
     }
 }

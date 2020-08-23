@@ -1,10 +1,15 @@
 package com.sjimtv.control;
 
 import com.sjimtv.App;
+import com.sjimtv.mediaplayer.MediaController;
+import com.sjimtv.mediaplayer.MediaStatus;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Slider;
+import javafx.util.Duration;
 import uk.co.caprica.vlcj.player.base.AudioApi;
 import uk.co.caprica.vlcj.player.base.ControlsApi;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
@@ -13,11 +18,9 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class ControlScene implements Initializable {
-    private EmbeddedMediaPlayer mediaPlayer;
-    private ControlsApi mediaController;
-    private AudioApi audioController;
+    private MediaController mediaController;
+    private MediaStatus mediaStatus;
 
-    private TimelineManager timelineManager;
 
     @FXML
     private Slider seekbar, volumebar;
@@ -27,14 +30,12 @@ public class ControlScene implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        mediaPlayer = App.mediaManager.getEmbeddedMediaPlayer();
-        mediaController = mediaPlayer.controls();
-        audioController = mediaPlayer.audio();
+        mediaController = App.mediaController;
+        mediaStatus = App.mediaStatus;
 
-        timelineManager = new TimelineManager(mediaPlayer);
-        timelineManager.subscribeOnPosition(this);
 
         initializeSeekbar();
+        initializeSeekbarTimeline();
         initializeVolumebar();
     }
 
@@ -46,10 +47,22 @@ public class ControlScene implements Initializable {
         });
         seekbar.setOnMouseReleased(mouseEvent -> {
             System.out.println("RELEASE");
-            timelineManager.setPosition((float) seekbar.getValue() / 1000);
+            mediaController.setPosition((float) seekbar.getValue() / 1000);
             mediaController.setPause(false);
             isTimelineDragged = false;
         });
+    }
+
+    private void initializeSeekbarTimeline(){
+        Timeline positionEvent = new Timeline(
+                new KeyFrame(Duration.millis(500),
+                        event -> {
+                    if (mediaStatus.isPlaying())
+                            positionListener(mediaStatus.getPosition());
+                        })
+        );
+        positionEvent.setCycleCount(Timeline.INDEFINITE);
+        positionEvent.play();
     }
 
     public void positionListener(float position){
@@ -58,7 +71,7 @@ public class ControlScene implements Initializable {
 
     private void initializeVolumebar(){
         volumebar.setOnMouseDragged(mouseEvent -> {
-            audioController.setVolume((int) volumebar.getValue());
+            mediaController.setVolume((float) (volumebar.getValue() / 100));
         });
     }
 

@@ -1,13 +1,13 @@
 package com.sjimtv;
 
+import com.sjimtv.mediaplayer.MediaController;
 import com.sjimtv.mediaplayer.MediaManager;
+import com.sjimtv.mediaplayer.MediaStatus;
 import com.sjimtv.mediaplayer.OutputStageManager;
 import com.sjimtv.server.MessageListener;
 import com.sjimtv.server.Server;
 import com.sjimtv.showStructure.Show;
 import com.sjimtv.filemanager.ShowFactory;
-import com.sjimtv.showStructure.Shows;
-import com.sjimtv.utils.JsonConverter;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -23,10 +23,12 @@ import java.io.IOException;
  */
 public class App extends Application {
 
-    private static Scene scene;
+
     OutputStageManager outputStageManager;
 
-    public static MediaManager mediaManager;
+    private static MediaManager mediaManager;
+    public static MediaController mediaController;
+    public static MediaStatus mediaStatus;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -35,8 +37,10 @@ public class App extends Application {
 
         showControlStage(stage);
 
-        Server serverThread = new Server(new MessageListener(mediaManager));
+        Server serverThread = new Server(new MessageListener());
         serverThread.start();
+
+        testClip();
     }
 
     private void showOutputStage(){
@@ -56,7 +60,8 @@ public class App extends Application {
 
     private void initializeVLCPlayer(ImageView outputView){
         mediaManager = new MediaManager(outputView);
-        //vlcPlayerManager.playTestClip(TestCases.testMediaClip, "Media", false);
+        mediaController = mediaManager.getMediaController();
+        mediaStatus = mediaManager.getMediaStatus();
     }
 
 
@@ -85,11 +90,13 @@ public class App extends Application {
     }
 
     public static void main(String[] args) {
-        //launch();
+        launch();
+    }
 
-        Shows shows = ShowFactory.pullShows("C:\\Users\\sjim_\\Documents\\Series");
-
-        System.out.println(JsonConverter.convertShowsToJson(shows));
+    private void testClip(){
+        //mediaController.playMedia(TestCases.testMediaClip);
+        Show rickAndMorty = ShowFactory.pullShow("C:\\Users\\sjim_\\Documents\\Series\\Rick and Morty S04");
+        mediaController.playEpisode(rickAndMorty.getEpisodes().get(5));
     }
 
 }

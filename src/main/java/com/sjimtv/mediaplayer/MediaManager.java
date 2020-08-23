@@ -15,21 +15,18 @@ public class MediaManager {
     private final MediaPlayerFactory factory;
     private final EmbeddedMediaPlayer embeddedMediaPlayer;
 
-    private final ControlsApi controlApi;
-    private final AudioApi audioApi;
+    private final MediaController mediaController;
+    private final MediaStatus mediaStatus;
 
-
-    private String mediaName;
     private boolean isNewMedia = true;
-    private boolean isMute = false;
 
     public MediaManager(ImageView outputView) {
         factory = new MediaPlayerFactory();
         embeddedMediaPlayer = factory.mediaPlayers().newEmbeddedMediaPlayer();
         embeddedMediaPlayer.videoSurface().set(videoSurfaceForImageView(outputView));
 
-        controlApi = embeddedMediaPlayer.controls();
-        audioApi = embeddedMediaPlayer.audio();
+        mediaController = new MediaController(embeddedMediaPlayer);
+        mediaStatus = new MediaStatus(embeddedMediaPlayer);
 
         setupMediaPlayingEvent();
 
@@ -42,6 +39,7 @@ public class MediaManager {
             public void playing(MediaPlayer mediaPlayer) {
                 super.playing(mediaPlayer);
                 System.out.println("Playing");
+                mediaStatus.isPlaying(true);
 
             }
         });
@@ -59,35 +57,16 @@ public class MediaManager {
 
     private void initializeNewMedia() {
         isNewMedia = false;
-        System.out.println("New Media " + embeddedMediaPlayer.media().info().mrl());
-        audioApi.setMute(isMute);
-        displayMessage("Now Playing :  " + mediaName);
-
+        mediaController.displayMessage("Now Playing :  " + mediaStatus.getPathOfCurrentPlaying());
     }
 
-    public void playTestClip(String url, String mediaName, boolean isMute) {
-
-        this.mediaName = mediaName;
-        this.isMute = isMute;
-
-        embeddedMediaPlayer.submit(() -> embeddedMediaPlayer.media().play(url));
-        embeddedMediaPlayer.controls().setRepeat(true);
-
+    public MediaController getMediaController() {
+        return mediaController;
     }
 
-    public void displayMessage(String string) {
-        embeddedMediaPlayer.marquee().set(Marquee.marquee()
-                .position(MarqueePosition.CENTRE)
-                .text(string)
-                .size(60)
-                .timeout(5000)
-                .enable());
+    public MediaStatus getMediaStatus() {
+        return mediaStatus;
     }
-
-    public EmbeddedMediaPlayer getEmbeddedMediaPlayer() {
-        return embeddedMediaPlayer;
-    }
-
 
     public void release() {
         embeddedMediaPlayer.controls().stop();

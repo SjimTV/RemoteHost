@@ -8,6 +8,12 @@ module com.sjimtv {
     opens com.sjimtv;
     exports com.sjimtv;
 
+    opens com.sjimtv.control;
+    exports com.sjimtv.control;
+
+    opens com.sjimtv.mediaplayer;
+    exports com.sjimtv.mediaplayer;
+
     opens com.sjimtv.showStructure;
     exports com.sjimtv.showStructure;
 }
