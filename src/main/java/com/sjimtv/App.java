@@ -4,7 +4,7 @@ import com.sjimtv.mediaplayer.MediaController;
 import com.sjimtv.mediaplayer.MediaManager;
 import com.sjimtv.mediaplayer.MediaStatus;
 import com.sjimtv.mediaplayer.OutputStageManager;
-import com.sjimtv.server.MessageListener;
+import com.sjimtv.server.ServerCommunicator;
 import com.sjimtv.server.Server;
 import com.sjimtv.showStructure.Show;
 import com.sjimtv.filemanager.ShowFactory;
@@ -29,6 +29,7 @@ public class App extends Application {
     private static MediaManager mediaManager;
     public static MediaController mediaController;
     public static MediaStatus mediaStatus;
+    public static Server server;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -37,8 +38,8 @@ public class App extends Application {
 
         showControlStage(stage);
 
-        Server serverThread = new Server(new MessageListener());
-        serverThread.start();
+        server = new Server(new ServerCommunicator());
+        server.start();
 
         testClip();
     }

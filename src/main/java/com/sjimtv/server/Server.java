@@ -5,7 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server extends Thread {
-    private final MessageListener messageListener;
+    private final ServerCommunicator serverCommunicator;
 
     public static final int SERVER_PORT = 4444;
     private boolean isServerRunning;
@@ -16,8 +16,8 @@ public class Server extends Thread {
 
 
 
-    public Server(MessageListener messageListener) {
-       this.messageListener = messageListener;
+    public Server(ServerCommunicator serverCommunicator) {
+       this.serverCommunicator = serverCommunicator;
     }
 
     @Override
@@ -78,10 +78,11 @@ public class Server extends Thread {
     }
 
     private void messageReceived(String message) {
-        messageListener.getMessage(message);
+        serverCommunicator.getMessage(message);
     }
 
     public void sendMessage(String message) {
+        System.out.println("test");
         if (bufferOut != null && !bufferOut.checkError()) {
             bufferOut.println(message);
             bufferOut.flush();

@@ -11,7 +11,7 @@ public class MediaController {
     private final MarqueeApi marqueeApi;
     private final AudioApi audioApi;
 
-    public MediaController(EmbeddedMediaPlayer mediaPlayer){
+    public MediaController(EmbeddedMediaPlayer mediaPlayer) {
         this.mediaPlayer = mediaPlayer;
         mediaApi = mediaPlayer.media();
         controlApi = mediaPlayer.controls();
@@ -19,7 +19,7 @@ public class MediaController {
         audioApi = mediaPlayer.audio();
     }
 
-    public void playMedia(String path){
+    public void playMedia(String path) {
         mediaPlayer.submit(() -> mediaApi.play(path));
     }
 
@@ -27,28 +27,32 @@ public class MediaController {
         playMedia(episode.getPath());
     }
 
-    public void pause(){
+    public void pause() {
         controlApi.pause();
     }
 
-    public void setPause(boolean isPause){
+    public void setPause(boolean isPause) {
         controlApi.setPause(isPause);
     }
 
-    public void setRepeat(boolean isRepeat){
+    public void stop() {
+        controlApi.stop();
+    }
+
+    public void setRepeat(boolean isRepeat) {
         controlApi.setRepeat(isRepeat);
     }
 
-    public void setMute(boolean isMute){
+    public void setMute(boolean isMute) {
         audioApi.setMute(isMute);
     }
 
-    public void setVolume(float volume){
+    public void setVolume(float volume) {
         int volumePercentage = (int) (volume * 100);
         audioApi.setVolume(volumePercentage);
     }
 
-    public void setPosition(float position){
+    public void setPosition(float position) {
         controlApi.setPosition(position);
     }
 
