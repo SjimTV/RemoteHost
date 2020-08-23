@@ -96,7 +96,7 @@ public class App extends Application {
 
     private void testClip(){
         //mediaController.playMedia(TestCases.testMediaClip);
-        Show rickAndMorty = ShowFactory.pullShow("C:\\Users\\sjim_\\Documents\\Series\\Rick and Morty S04");
+        Show rickAndMorty = ShowFactory.pullShow("C:\\Users\\sjim_\\Documents\\Series\\Rick and Morty");
         mediaController.playEpisode(rickAndMorty.getEpisodes().get(5));
     }
 

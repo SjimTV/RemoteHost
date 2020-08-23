@@ -82,7 +82,6 @@ public class Server extends Thread {
     }
 
     public void sendMessage(String message) {
-        System.out.println("test");
         if (bufferOut != null && !bufferOut.checkError()) {
             bufferOut.println(message);
             bufferOut.flush();
@@ -94,6 +93,8 @@ public class Server extends Thread {
         isServerRunning = false;
         cleanupBuffer();
         closeAndEraseSockets();
+
+        run();
 
     }
 

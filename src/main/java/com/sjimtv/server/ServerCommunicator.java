@@ -1,7 +1,10 @@
 package com.sjimtv.server;
 
 import com.sjimtv.App;
+import com.sjimtv.filemanager.ShowFactory;
 import com.sjimtv.mediaplayer.MediaController;
+import com.sjimtv.showStructure.Shows;
+import com.sjimtv.utils.JsonConverter;
 
 
 public class ServerCommunicator {
@@ -14,6 +17,7 @@ public class ServerCommunicator {
     private final static String CMD_STOP = "STOP";
 
     private final static String PULL_ALL = "PULL_ALL";
+    private final static String PUSH_ALL = "PUSH_ALL";
 
     private final MediaController mediaController;
 
@@ -78,6 +82,10 @@ public class ServerCommunicator {
     }
 
     private void pushAllShows(){
-        App.server.sendMessage("ALL SHOWS");
+        System.out.println("Pushing all shows out.");
+        Shows allShows = ShowFactory.pullShows("C:\\Users\\sjim_\\Documents\\Series");
+        String message = FILE_TAG + PUSH_ALL + JsonConverter.convertShowsToJson(allShows);
+
+        App.server.sendMessage(message);
     }
 }
