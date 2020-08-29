@@ -2,6 +2,7 @@ package com.sjimtv.server;
 
 import com.sjimtv.App;
 import com.sjimtv.filemanager.ShowFactory;
+import com.sjimtv.mediaplayer.MediaController;
 import com.sjimtv.showStructure.Episode;
 import com.sjimtv.showStructure.Shows;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,7 @@ public class RestApiController {
     @GetMapping("/pause")
     public String pause() throws InterruptedException {
         App.mediaController.pause();
+
         Thread.sleep(200); // mediastatus call is faster than pausing/playing media
         if (App.mediaStatus.isPlaying()) return "playing";
         else return "paused";

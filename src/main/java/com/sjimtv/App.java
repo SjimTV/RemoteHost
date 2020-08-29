@@ -21,6 +21,7 @@ import java.io.IOException;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 
 
 /**
@@ -37,6 +38,8 @@ public class App extends Application {
     public static MediaController mediaController;
     public static MediaStatus mediaStatus;
     public static Server server;
+
+
 
     @Override
     public void start(Stage stage) throws IOException {
