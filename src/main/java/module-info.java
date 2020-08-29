@@ -4,9 +4,15 @@ module com.sjimtv {
     requires uk.co.caprica.vlcj;
     requires uk.co.caprica.vlcj.javafx;
     requires com.google.gson;
+    requires spring.web;
+    requires spring.boot;
+    requires spring.boot.autoconfigure;
 
     opens com.sjimtv;
     exports com.sjimtv;
+
+    opens com.sjimtv.server;
+    exports com.sjimtv.server;
 
     opens com.sjimtv.control;
     exports com.sjimtv.control;

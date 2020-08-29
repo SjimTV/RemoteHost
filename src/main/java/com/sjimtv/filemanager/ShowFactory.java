@@ -7,7 +7,6 @@ import com.sjimtv.showStructure.Shows;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

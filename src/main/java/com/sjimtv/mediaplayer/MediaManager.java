@@ -18,8 +18,6 @@ public class MediaManager {
     private final MediaController mediaController;
     private final MediaStatus mediaStatus;
 
-    private boolean isNewMedia = true;
-
     public MediaManager(ImageView outputView) {
         factory = new MediaPlayerFactory();
         embeddedMediaPlayer = factory.mediaPlayers().newEmbeddedMediaPlayer();
@@ -28,36 +26,6 @@ public class MediaManager {
         mediaController = new MediaController(embeddedMediaPlayer);
         mediaStatus = new MediaStatus(embeddedMediaPlayer);
 
-        setupMediaPlayingEvent();
-
-    }
-
-
-    private void setupMediaPlayingEvent() {
-        embeddedMediaPlayer.events().addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
-            @Override
-            public void playing(MediaPlayer mediaPlayer) {
-                super.playing(mediaPlayer);
-                System.out.println("Playing");
-                mediaStatus.isPlaying(true);
-
-            }
-        });
-
-        embeddedMediaPlayer.events().addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
-            @Override
-            public void mediaPlayerReady(MediaPlayer mediaPlayer) {
-                super.mediaPlayerReady(mediaPlayer);
-                System.out.println("Ready");
-                if (isNewMedia) initializeNewMedia();
-            }
-        });
-    }
-
-
-    private void initializeNewMedia() {
-        isNewMedia = false;
-        mediaController.displayMessage("Now Playing :  " + mediaStatus.getPathOfCurrentPlaying());
     }
 
     public MediaController getMediaController() {

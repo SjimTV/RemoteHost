@@ -9,8 +9,6 @@ public class MediaStatus {
     private final StatusApi statusApi;
     private final InfoApi infoApi;
 
-    private boolean isPlaying = false;
-
     public MediaStatus(EmbeddedMediaPlayer mediaPlayer){
         this.mediaPlayer = mediaPlayer;
         statusApi = mediaPlayer.status();
@@ -31,10 +29,7 @@ public class MediaStatus {
     }
 
     public boolean isPlaying() {
-        return isPlaying;
+        return statusApi.isPlaying();
     }
 
-    public void isPlaying(boolean isPlaying){
-        this.isPlaying = isPlaying;
-    }
 }

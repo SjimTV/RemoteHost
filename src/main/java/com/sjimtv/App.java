@@ -18,9 +18,16 @@ import javafx.stage.WindowEvent;
 
 import java.io.IOException;
 
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+
 /**
  * JavaFX App
  */
+
+@SpringBootApplication
 public class App extends Application {
 
 
@@ -91,12 +98,13 @@ public class App extends Application {
     }
 
     public static void main(String[] args) {
+        SpringApplication.run(App.class, args);
         launch();
     }
 
     private void testClip(){
         //mediaController.playMedia(TestCases.testMediaClip);
-        Show rickAndMorty = ShowFactory.pullShow("C:\\Users\\sjim_\\Documents\\Series\\Rick and Morty");
+        Show rickAndMorty = ShowFactory.pullShow("C:\\Users\\sjim_\\Documents\\Series\\Rick and Morty S04");
         mediaController.playEpisode(rickAndMorty.getEpisodes().get(5));
     }
 
