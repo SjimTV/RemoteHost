@@ -6,9 +6,12 @@ import com.sjimtv.showStructure.Show;
 import com.sjimtv.showStructure.Shows;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.io.FileUtils;
 
 public class ShowFactory {
 
@@ -46,9 +49,11 @@ public class ShowFactory {
         String showPath = showDirectory.getAbsolutePath();
         String showName = showDirectory.getName();
         int showSeason = getSeason(showName);
+        String showImage = getShowImage(showPath, showName);
+
         Episodes episodes = fillEpisodes(showDirectory);
 
-        return new Show(showPath, showName, showSeason, episodes);
+        return new Show(showPath, showName, showSeason, showImage, episodes);
     }
 
     private static File[] listMediaFiles(File directory) {
@@ -83,8 +88,7 @@ public class ShowFactory {
     }
 
     private static Episode makeEpisode(File episodeFile) {
-        Episode episode = new Episode(episodeFile.getAbsolutePath(), episodeFile.getName());
-        return episode;
+        return new Episode(episodeFile.getAbsolutePath(), episodeFile.getName());
     }
 
     private static int getSeason(String showName) {
@@ -96,6 +100,22 @@ public class ShowFactory {
             } catch (NumberFormatException e) {
                 return 1;
             }
+        }
+    }
+
+    private static String getShowImage(String showPath, String showName){
+        String extension = ".jpg";
+        File image = new File(showPath + File.separator + showName + extension);
+        System.out.println(image.getAbsolutePath());
+        if (!image.exists()) return "NO_IMAGE_FOUND";
+
+        try {
+            byte[] fileContent = FileUtils.readFileToByteArray(image);
+            return Base64.getEncoder().encodeToString(fileContent);
+
+        }catch (IOException e){
+            e.printStackTrace();
+            return "NO_IMAGE_FOUND";
         }
     }
 

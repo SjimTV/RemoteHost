@@ -7,6 +7,7 @@ module com.sjimtv {
     requires spring.web;
     requires spring.boot;
     requires spring.boot.autoconfigure;
+    requires org.apache.commons.io;
 
     opens com.sjimtv;
     exports com.sjimtv;
