@@ -4,10 +4,12 @@ import com.sjimtv.mediaplayer.MediaController;
 import com.sjimtv.mediaplayer.MediaManager;
 import com.sjimtv.mediaplayer.MediaStatus;
 import com.sjimtv.mediaplayer.OutputStageManager;
+import com.sjimtv.scrapers.IMDBScraper;
 import com.sjimtv.server.ServerCommunicator;
 import com.sjimtv.server.Server;
 import com.sjimtv.showStructure.Show;
 import com.sjimtv.filemanager.ShowFactory;
+import com.sjimtv.showStructure.Shows;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -21,7 +23,6 @@ import java.io.IOException;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 
 
 /**
@@ -39,7 +40,7 @@ public class App extends Application {
     public static MediaStatus mediaStatus;
     public static Server server;
 
-
+    public static Shows shows;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -51,17 +52,17 @@ public class App extends Application {
         server = new Server(new ServerCommunicator());
         server.start();
 
-        testClip();
+        //testClip();
     }
 
-    private void showOutputStage(){
+    private void showOutputStage() {
         outputStageManager = new OutputStageManager();
 
         Stage outputStage = outputStageManager.getOutputStage();
         outputStage.show();
     }
 
-    private void showControlStage(Stage controlStage) throws IOException{
+    private void showControlStage(Stage controlStage) throws IOException {
         Scene controlScene = new Scene(loadFXML("controlScene"));
         controlStage.setScene(controlScene);
 
@@ -69,10 +70,15 @@ public class App extends Application {
         controlScene.getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::closeWindowEvent);
     }
 
-    private void initializeVLCPlayer(ImageView outputView){
+    private void initializeVLCPlayer(ImageView outputView) {
         mediaManager = new MediaManager(outputView);
         mediaController = mediaManager.getMediaController();
         mediaStatus = mediaManager.getMediaStatus();
+    }
+
+    private void initializeShows() {
+        shows = ShowFactory.pullShows("C:\\Users\\sjim_\\Documents\\Series");
+
     }
 
 
@@ -81,10 +87,10 @@ public class App extends Application {
         return fxmlLoader.load();
     }
 
-    private void closeWindowEvent(WindowEvent event){
-        try{
+    private void closeWindowEvent(WindowEvent event) {
+        try {
             stop();
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             System.exit(-1);
         }
@@ -105,8 +111,7 @@ public class App extends Application {
         launch();
     }
 
-    private void testClip(){
-        //mediaController.playMedia(TestCases.testMediaClip);
+    private void testClip() {
         Show rickAndMorty = ShowFactory.pullShow("C:\\Users\\sjim_\\Documents\\Series\\Rick and Morty S04");
         mediaController.playEpisode(rickAndMorty.getEpisodes().get(5));
     }

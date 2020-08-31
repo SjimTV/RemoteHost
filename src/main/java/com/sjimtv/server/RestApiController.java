@@ -26,7 +26,7 @@ public class RestApiController {
 
     @GetMapping("/pull_shows")
     public Shows pullShows(){
-        return ShowFactory.pullShows("C:\\Users\\sjim_\\Documents\\Series");
+        return App.shows;
     }
 
     @PostMapping("/play_episode")

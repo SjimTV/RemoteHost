@@ -1,9 +1,8 @@
 package com.sjimtv.filemanager;
 
-import com.sjimtv.showStructure.Episode;
-import com.sjimtv.showStructure.Episodes;
-import com.sjimtv.showStructure.Show;
-import com.sjimtv.showStructure.Shows;
+import com.sjimtv.scrapers.IMDBScraper;
+import com.sjimtv.scrapers.OpenSubsApi;
+import com.sjimtv.showStructure.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.commons.io.FileUtils;
+
 
 public class ShowFactory {
 
@@ -20,8 +19,6 @@ public class ShowFactory {
         if (!showDirectory.exists() || !showDirectory.isDirectory()) throw new Error("Parent directory does not exist");
 
         return listShowFiles(showDirectory);
-
-
     }
 
     private static Shows listShowFiles(File directory) {
@@ -31,10 +28,12 @@ public class ShowFactory {
         if (directoryContent == null) return shows;
         for (File file : directoryContent) {
             if (file.isDirectory()) {
+
                 try {
                     shows.add(pullShow(file.getAbsolutePath()));
                 } catch (Exception e){
-                    System.out.println(file.getName() + " is not a valid Show Directory.");
+                    e.printStackTrace();
+                    System.out.println("Something went wrong here");
                 }
             }
         }
@@ -46,15 +45,46 @@ public class ShowFactory {
         File showDirectory = new File(pathShowDirectory);
         if (!showDirectory.exists() || !showDirectory.isDirectory()) throw new Error("Show directory does not exist");
 
+        if (ShowInfoManager.showInfoExists(showDirectory)) {
+            System.out.println("ShowInfo available");
+            return loadShow(showDirectory);
+        } else {
+            System.out.println("ShowInfo not available, making ShowInfo");
+            return createShow(showDirectory);
+        }
+
+    }
+
+    private static Show loadShow(File showDirectory) {
+        try {
+            return ShowInfoManager.loadShowFromShowInfo(showDirectory);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return createShow(showDirectory);
+        }
+    }
+
+    private static Show createShow(File showDirectory) {
         String showPath = showDirectory.getAbsolutePath();
         String showName = showDirectory.getName();
         int showSeason = getSeason(showName);
-        String showImage = getShowImage(showPath, showName);
 
-        Episodes episodes = fillEpisodes(showDirectory);
+        String imdbID = IMDBScraper.getIMDBId(showName);
 
-        return new Show(showPath, showName, showSeason, showImage, episodes);
+        String showImage = getShowImage(showPath, imdbID);
+
+        Episodes episodes = fillEpisodes(showDirectory, imdbID, showSeason);
+
+        String[] mediaTypeFlags = findMediaTypeFlags(episodes.get(1).getPath());
+        Show show = new Show(showPath, showName, showSeason, showImage, imdbID, mediaTypeFlags, episodes);
+
+        if (!subtitlesExist(show)) generateSubtitles(show);
+
+        ShowInfoManager.saveShowInfo(show);
+
+        return show;
     }
+
 
     private static File[] listMediaFiles(File directory) {
         File[] directoryContent = directory.listFiles();
@@ -75,21 +105,39 @@ public class ShowFactory {
         return matcher.find();
     }
 
-    private static Episodes fillEpisodes(File showDirectory) {
+    private static Episodes fillEpisodes(File showDirectory, String imdbID, int season) {
         Episodes episodes = new Episodes();
+        String[] episodeTitles = getEpisodeTitles(imdbID, season);
 
         File[] mediaFiles = listMediaFiles(showDirectory);
         int episodeCount = 1;
         for (File mediaFile : mediaFiles) {
-            episodes.put(episodeCount, makeEpisode(mediaFile));
+            episodes.put(episodeCount, EpisodeFactory.makeEpisode(mediaFile, episodeTitles[episodeCount]));
             episodeCount++;
         }
         return episodes;
     }
 
-    private static Episode makeEpisode(File episodeFile) {
-        return new Episode(episodeFile.getAbsolutePath(), episodeFile.getName());
+    private static String[] getEpisodeTitles(String imdbID, int season) {
+        try {
+            String[] titles = IMDBScraper.getEpisodeTitles(imdbID, season);
+            if (titles.equals(IMDBScraper.TITLES_NOT_FOUND) || titles.length == 1) return generateStandardTitles();
+            else return titles;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return generateStandardTitles();
+        }
     }
+
+    private static String[] generateStandardTitles(){
+        ArrayList<String> standardTitles = new ArrayList<>();
+        for (int i = 0; i <= 15; i++){
+            standardTitles.add("Episode " + i);
+        }
+
+        return standardTitles.toArray(String[]::new);
+    }
+
 
     private static int getSeason(String showName) {
         Matcher matcher = Pattern.compile("[S]\\d{2}").matcher(showName);
@@ -103,20 +151,53 @@ public class ShowFactory {
         }
     }
 
-    private static String getShowImage(String showPath, String showName){
-        String extension = ".jpg";
-        File image = new File(showPath + File.separator + showName + extension);
-        System.out.println(image.getAbsolutePath());
-        if (!image.exists()) return "NO_IMAGE_FOUND";
+    private static String getShowImage(String showPath, String imdbID) {
+        if (!ShowInfoManager.showImageExists(showPath)) createShowImage(showPath, imdbID);
+        return ShowInfoManager.loadShowImage(showPath);
+    }
 
+    private static void createShowImage(String showPath, String imdbID) {
+        System.out.printf("Get Show image for %s from IMDB \n", showPath);
+        byte[] imageBytes = IMDBScraper.getPosterFromIMDB(imdbID);
         try {
-            byte[] fileContent = FileUtils.readFileToByteArray(image);
-            return Base64.getEncoder().encodeToString(fileContent);
-
-        }catch (IOException e){
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
             e.printStackTrace();
-            return "NO_IMAGE_FOUND";
         }
+
+        ShowInfoManager.saveShowImage(showPath, imageBytes);
+    }
+
+    private static String[] findMediaTypeFlags(String episodeName) {
+        ArrayList<String> mediaTypeFlags = new ArrayList<>();
+
+        for (String mediaTypeFlag : MediaFlags.mediaTypeFlags) {
+            Pattern pattern = Pattern.compile(mediaTypeFlag, Pattern.CASE_INSENSITIVE);
+            Matcher matcher = pattern.matcher(episodeName);
+            while (matcher.find()) {
+                mediaTypeFlags.add(mediaTypeFlag);
+            }
+        }
+
+
+        return mediaTypeFlags.toArray(String[]::new);
+    }
+
+    private static boolean subtitlesExist(Show show) {
+        return new File(show.getPath() + File.separator + "Subs").exists();
+    }
+
+    private static void generateSubtitles(Show show) {
+        try {
+            System.out.println("Getting Subtitles for " + show.getName());
+
+            ArrayList<String> subtitleDownloadLinks = OpenSubsApi.getSubtitleDownloadLinks(show);
+            ArrayList<String> subtitles = OpenSubsApi.downloadSubtitles(subtitleDownloadLinks);
+            SubtitleWriter.writeSubsToSRTs(subtitles, show);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
 

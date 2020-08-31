@@ -8,6 +8,8 @@ module com.sjimtv {
     requires spring.boot;
     requires spring.boot.autoconfigure;
     requires org.apache.commons.io;
+    requires ffmpeg;
+    requires org.jsoup;
 
     opens com.sjimtv;
     exports com.sjimtv;
@@ -23,5 +25,8 @@ module com.sjimtv {
 
     opens com.sjimtv.showStructure;
     exports com.sjimtv.showStructure;
+
+    opens com.sjimtv.filemanager;
+    exports com.sjimtv.filemanager;
 }
 
