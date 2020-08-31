@@ -52,6 +52,7 @@ public class App extends Application {
         server = new Server(new ServerCommunicator());
         server.start();
 
+        initializeShows();
         //testClip();
     }
 

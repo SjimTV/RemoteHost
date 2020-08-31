@@ -131,7 +131,7 @@ public class ShowFactory {
 
     private static String[] generateStandardTitles(){
         ArrayList<String> standardTitles = new ArrayList<>();
-        for (int i = 0; i <= 15; i++){
+        for (int i = 0; i <= 25; i++){
             standardTitles.add("Episode " + i);
         }
 
