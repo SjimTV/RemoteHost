@@ -7,7 +7,7 @@ import com.sjimtv.showStructure.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Base64;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -73,7 +73,11 @@ public class ShowFactory {
 
         String showImage = getShowImage(showPath, imdbID);
 
-        Episodes episodes = fillEpisodes(showDirectory, imdbID, showSeason);
+
+        File[] mediaFiles = listMediaFiles(showDirectory);
+        Episodes episodes;
+        if (mediaFiles.length == 1) episodes = fillMovie(mediaFiles[0], showName);
+        else episodes = fillEpisodes(mediaFiles, imdbID, showSeason);
 
         String[] mediaTypeFlags = findMediaTypeFlags(episodes.get(1).getPath());
         Show show = new Show(showPath, showName, showSeason, showImage, imdbID, mediaTypeFlags, episodes);
@@ -105,33 +109,51 @@ public class ShowFactory {
         return matcher.find();
     }
 
-    private static Episodes fillEpisodes(File showDirectory, String imdbID, int season) {
+    private static Episodes fillMovie(File mediaFile, String showName){
         Episodes episodes = new Episodes();
-        String[] episodeTitles = getEpisodeTitles(imdbID, season);
+        episodes.put(1, EpisodeFactory.makeEpisode(mediaFile, showName));
 
-        File[] mediaFiles = listMediaFiles(showDirectory);
-        int episodeCount = 1;
-        for (File mediaFile : mediaFiles) {
-            episodes.put(episodeCount, EpisodeFactory.makeEpisode(mediaFile, episodeTitles[episodeCount]));
-            episodeCount++;
-        }
         return episodes;
     }
 
-    private static String[] getEpisodeTitles(String imdbID, int season) {
+    private static Episodes fillEpisodes(File[] mediaFiles, String imdbID, int season) {
+        Episodes episodes = new Episodes();
+
+
+        try {
+            String[] episodeTitles = getEpisodeTitles(imdbID, season, mediaFiles.length);
+            int episodeCount = 1;
+            for (File mediaFile : mediaFiles) {
+                episodes.put(episodeCount, EpisodeFactory.makeEpisode(mediaFile, episodeTitles[episodeCount]));
+                episodeCount++;
+            }
+        } catch (ArrayIndexOutOfBoundsException e){
+            String[] episodeTitles = generateStandardTitles(mediaFiles.length);
+            int episodeCount = 1;
+            for (File mediaFile : mediaFiles) {
+                episodes.put(episodeCount, EpisodeFactory.makeEpisode(mediaFile, episodeTitles[episodeCount]));
+                episodeCount++;
+            }
+            System.out.println("Did not found enough titles...");
+        }
+
+        return episodes;
+    }
+
+    private static String[] getEpisodeTitles(String imdbID, int season, int episodesCount) {
         try {
             String[] titles = IMDBScraper.getEpisodeTitles(imdbID, season);
-            if (titles.equals(IMDBScraper.TITLES_NOT_FOUND) || titles.length == 1) return generateStandardTitles();
+            if (Arrays.equals(titles, IMDBScraper.TITLES_NOT_FOUND) || titles.length == 1) return generateStandardTitles(episodesCount);
             else return titles;
         } catch (IOException e) {
             e.printStackTrace();
-            return generateStandardTitles();
+            return generateStandardTitles(episodesCount);
         }
     }
 
-    private static String[] generateStandardTitles(){
+    private static String[] generateStandardTitles(int episodeCount){
         ArrayList<String> standardTitles = new ArrayList<>();
-        for (int i = 0; i <= 25; i++){
+        for (int i = 0; i <= episodeCount; i++){
             standardTitles.add("Episode " + i);
         }
 
