@@ -26,7 +26,7 @@ public class OpenSubsApi {
     private static final String API_SEARCH_SEASON = "season-";
     private static final String API_SEARCH_LANGUAGE = "sublanguageid-";
 
-    public static ArrayList<String> getSubtitleDownloadLinks(Show show) throws IOException {
+    public static ArrayList<String> getSubtitleDownloadLinks(Show show) throws Exception {
 
         String imdbID = show.getImdbID();
         int season = show.getSeason();
@@ -47,7 +47,7 @@ public class OpenSubsApi {
     }
 
 
-    private static String requestDownloadLink (Show show, int episode) throws IOException{
+    private static String requestDownloadLink (Show show, int episode) throws Exception {
         URL url = buildSearchUrl(show, episode, "eng");
 
         assert url != null;
@@ -133,7 +133,9 @@ public class OpenSubsApi {
 
     }
 
-    private static JsonObject findBestSubtitle(JsonArray jsonArray, String[] mediaTypeFlag){
+    private static JsonObject findBestSubtitle(JsonArray jsonArray, String[] mediaTypeFlag) throws Exception {
+
+        if (jsonArray.isJsonNull()) throw new Exception("No Subtitles found!");
 
         if (mediaTypeFlag.length != 0){
             JsonArray filteredJsonArray = filterJsonByIdentifiers(jsonArray, mediaTypeFlag);

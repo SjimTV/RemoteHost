@@ -91,7 +91,7 @@ public class IMDBScraper {
             Document imdbDocument = Jsoup.connect(url).get();
             return extractTitlesFromIMDB(imdbDocument);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("No Titles Found...");
             return TITLES_NOT_FOUND;
         }
     }

@@ -10,10 +10,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class RestApiController {
 
-    @GetMapping("/test")
-    public String helloWorld(@RequestParam(value = "name", defaultValue = "World") String name){
-        return "Hello " + name;
-    }
 
     @GetMapping("/pause")
     public String pause() throws InterruptedException {

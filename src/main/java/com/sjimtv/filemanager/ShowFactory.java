@@ -218,6 +218,9 @@ public class ShowFactory {
             SubtitleWriter.writeSubsToSRTs(subtitles, show);
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("No Subtitles Downloaded..");
         }
 
     }

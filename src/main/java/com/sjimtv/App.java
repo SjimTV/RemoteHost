@@ -53,7 +53,6 @@ public class App extends Application {
         server.start();
 
         initializeShows();
-        //testClip();
     }
 
     private void showOutputStage() {
