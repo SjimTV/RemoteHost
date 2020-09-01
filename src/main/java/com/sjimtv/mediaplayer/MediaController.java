@@ -28,21 +28,17 @@ public class MediaController {
     public void playEpisode(Episode episode) {
         playMedia(episode.getPath());
         setSubtitles(episode.getSubtitlePath());
+        displayMessage("Now Playing:\n" + episode.getName());
     }
 
     private void setSubtitles(String subtitlePath){
         File subtitleFile = new File(subtitlePath);
         if (subtitleFile.exists()) {
-            System.out.println("Subtitles added " + subtitlePath);
-            if (mediaPlayer.subpictures().setSubTitleFile(subtitleFile)){
-                System.out.println("Suceeded!");
-            } else {
-                System.out.println("FAILED!!!");
+            if (!mediaPlayer.subpictures().setSubTitleFile(subtitleFile)) {
+                System.out.println("Can't load subtitle: " + subtitlePath);
             }
-
         }
-        else System.out.println("Cant find subtitle : " + subtitlePath);
-
+        else System.out.println("Can't find subtitle: " + subtitlePath);
     }
 
     public void pause() {

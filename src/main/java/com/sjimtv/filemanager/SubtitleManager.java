@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
-public class SubtitleWriter {
+public class SubtitleManager {
 
 
     public static void writeSubsToSRTs(ArrayList<String> dataFiles, Show show){
@@ -20,13 +20,12 @@ public class SubtitleWriter {
     }
 
     private static void writeSubtoSRT(String dataFile, String showPath, String episodePath){
-        String episodeName = new File(episodePath).getName();
-        String pathDirectory = showPath + "\\Subs\\" + removeExtension(episodeName);
+        String subsFolderPath = showPath + File.separator + "Subs";
 
-        File directory = new File(pathDirectory);
-        if (!directory.exists()) directory.mkdirs();
-        File file = new File(pathDirectory + "\\English.srt");
+        File subsFolder = new File(subsFolderPath);
+        if (!subsDirectoryExist(showPath)) createSubsFolder(subsFolder);
 
+        File file = new File(getSubsPath(episodePath));
         try {
             PrintWriter writer = new PrintWriter(file.getAbsoluteFile(), StandardCharsets.UTF_8);
             writer.print(dataFile);
@@ -36,8 +35,23 @@ public class SubtitleWriter {
         }
     }
 
+    private static void createSubsFolder(File subsFolder){
+        if (!subsFolder.mkdirs()){
+            System.out.println("Could not create Subs Folder...");
+        }
+    }
+
+    public static String getSubsPath(String episodePath){
+        String episodeName = new File(episodePath).getName();
+        String showPath = episodePath.replace(episodeName, "");
+        return showPath + "Subs" + File.separator + removeExtension(episodeName) + ".srt";
+    }
+
+    public static boolean subsDirectoryExist(String showPath){
+       return new File(showPath + File.separator +"Subs").exists();
+    }
+
     private static String removeExtension(String filename){
         return filename.substring(0, filename.lastIndexOf("."));
-
     }
 }

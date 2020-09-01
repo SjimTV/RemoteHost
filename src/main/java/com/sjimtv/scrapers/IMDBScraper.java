@@ -84,14 +84,13 @@ public class IMDBScraper {
         return inputStream.readAllBytes();
     }
 
-    public static String[] getEpisodeTitles(String imdbID, int season) throws IOException {
+    public static String[] getEpisodeTitles(String imdbID, int season){
         String url = String.format("https://www.imdb.com/title/tt%s/episodes?season=%d", imdbID, season);
         try {
             // Get IMDB Titles
             Document imdbDocument = Jsoup.connect(url).get();
             return extractTitlesFromIMDB(imdbDocument);
         } catch (IOException e) {
-            System.out.println("No Titles Found...");
             return TITLES_NOT_FOUND;
         }
     }

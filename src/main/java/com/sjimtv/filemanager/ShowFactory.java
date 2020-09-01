@@ -28,13 +28,7 @@ public class ShowFactory {
         if (directoryContent == null) return shows;
         for (File file : directoryContent) {
             if (file.isDirectory()) {
-
-                try {
-                    shows.add(pullShow(file.getAbsolutePath()));
-                } catch (Exception e){
-                    e.printStackTrace();
-                    System.out.println("Something went wrong here");
-                }
+                shows.add(pullShow(file.getAbsolutePath()));
             }
         }
         return shows;
@@ -82,7 +76,7 @@ public class ShowFactory {
         String[] mediaTypeFlags = findMediaTypeFlags(episodes.get(1).getPath());
         Show show = new Show(showPath, showName, showSeason, showImage, imdbID, mediaTypeFlags, episodes);
 
-        if (!subtitlesExist(show)) generateSubtitles(show);
+        if (!SubtitleManager.subsDirectoryExist(show.getPath())) generateSubtitles(show);
         generateSubtitlePaths(show);
 
         ShowInfoManager.saveShowInfo(show);
@@ -106,11 +100,11 @@ public class ShowFactory {
     private static boolean isMedia(File file) {
         if (file.isDirectory()) return false;
 
-        Matcher matcher = Pattern.compile("mp4|mkv").matcher(file.getName());
+        Matcher matcher = Pattern.compile("mp4|mkv|mov").matcher(file.getName());
         return matcher.find();
     }
 
-    private static Episodes fillMovie(File mediaFile, String showName){
+    private static Episodes fillMovie(File mediaFile, String showName) {
         Episodes episodes = new Episodes();
         episodes.put(1, EpisodeFactory.makeEpisode(mediaFile, showName));
 
@@ -127,33 +121,30 @@ public class ShowFactory {
                 episodes.put(episodeCount, EpisodeFactory.makeEpisode(mediaFile, episodeTitles[episodeCount]));
                 episodeCount++;
             }
-        } catch (ArrayIndexOutOfBoundsException e){
+        } catch (Exception e) {
+            System.out.println("Did not found enough titles, making standard ones");
             String[] episodeTitles = generateStandardTitles(mediaFiles.length);
             int episodeCount = 1;
             for (File mediaFile : mediaFiles) {
                 episodes.put(episodeCount, EpisodeFactory.makeEpisode(mediaFile, episodeTitles[episodeCount]));
                 episodeCount++;
             }
-            System.out.println("Did not found enough titles...");
         }
 
         return episodes;
     }
 
     private static String[] getEpisodeTitles(String imdbID, int season, int episodesCount) {
-        try {
-            String[] titles = IMDBScraper.getEpisodeTitles(imdbID, season);
-            if (Arrays.equals(titles, IMDBScraper.TITLES_NOT_FOUND) || titles.length == 1) return generateStandardTitles(episodesCount);
-            else return titles;
-        } catch (IOException e) {
-            e.printStackTrace();
+        String[] titles = IMDBScraper.getEpisodeTitles(imdbID, season);
+        if (Arrays.equals(titles, IMDBScraper.TITLES_NOT_FOUND) || titles.length == 1)
             return generateStandardTitles(episodesCount);
-        }
+        else return titles;
+
     }
 
-    private static String[] generateStandardTitles(int episodeCount){
+    private static String[] generateStandardTitles(int episodeCount) {
         ArrayList<String> standardTitles = new ArrayList<>();
-        for (int i = 0; i <= episodeCount; i++){
+        for (int i = 0; i <= episodeCount; i++) {
             standardTitles.add("Episode " + i);
         }
 
@@ -200,21 +191,16 @@ public class ShowFactory {
                 mediaTypeFlags.add(mediaTypeFlag);
             }
         }
-
-
         return mediaTypeFlags.toArray(String[]::new);
     }
 
-    private static boolean subtitlesExist(Show show) {
-        return new File(show.getPath() + File.separator + "Subs").exists();
-    }
 
     private static void generateSubtitles(Show show) {
         try {
             System.out.println("Getting Subtitles for " + show.getName());
             ArrayList<String> subtitleDownloadLinks = OpenSubsApi.getSubtitleDownloadLinks(show);
             ArrayList<String> subtitles = OpenSubsApi.downloadSubtitles(subtitleDownloadLinks);
-            SubtitleWriter.writeSubsToSRTs(subtitles, show);
+            SubtitleManager.writeSubsToSRTs(subtitles, show);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (Exception e) {
@@ -225,19 +211,15 @@ public class ShowFactory {
 
     private static void generateSubtitlePaths(Show show) {
         Episodes episodes = show.getEpisodes();
-        for (int episodeNumber : episodes.keySet()){
+        for (int episodeNumber : episodes.keySet()) {
             Episode episode = episodes.get(episodeNumber);
-            String fileName = removeExtension(new File(episode.getPath()).getName());
-            File subtitle = new File(show.getPath() + File.separator + "Subs" + File.separator + fileName + File.separator + "English.srt");
-            System.out.println(subtitle.getAbsolutePath());
+            File subtitle = new File(SubtitleManager.getSubsPath(episode.getPath()));
             if (subtitle.exists()) episode.setSubtitlePath(subtitle.getPath());
-            else episode.setSubtitlePath("NO_SUBTITLE_FOUND");
+            else {
+                episode.setSubtitlePath("NO_SUBTITLE_FOUND");
+                System.out.println("Cant find subtitles for " + episode.getName());
+            }
         }
-    }
-
-    private static String removeExtension(String filename){
-        return filename.substring(0, filename.lastIndexOf("."));
-
     }
 
 

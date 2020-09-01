@@ -1,5 +1,6 @@
 package com.sjimtv;
 
+import com.sjimtv.filemanager.SubtitleManager;
 import com.sjimtv.mediaplayer.MediaController;
 import com.sjimtv.mediaplayer.MediaManager;
 import com.sjimtv.mediaplayer.MediaStatus;
@@ -18,6 +19,7 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
+import java.io.File;
 import java.io.IOException;
 
 
@@ -46,6 +48,7 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
         showOutputStage();
         initializeVLCPlayer(outputStageManager.getOutputView());
+        setBackgroundClip();
 
         showControlStage(stage);
 
@@ -76,11 +79,15 @@ public class App extends Application {
         mediaStatus = mediaManager.getMediaStatus();
     }
 
-    private void initializeShows() {
-        shows = ShowFactory.pullShows("C:\\Users\\sjim_\\Documents\\Series");
-
+    private void setBackgroundClip(){
+        String path = "/background.mov";
+        mediaController.playMedia(path);
+        mediaController.setRepeat(true);
     }
 
+    private void initializeShows() {
+        shows = ShowFactory.pullShows("C:\\Users\\sjim_\\Documents\\Series");
+    }
 
     private static Parent loadFXML(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
@@ -94,7 +101,6 @@ public class App extends Application {
             e.printStackTrace();
             System.exit(-1);
         }
-
     }
 
     @Override
@@ -110,10 +116,4 @@ public class App extends Application {
         SpringApplication.run(App.class, args);
         launch();
     }
-
-    private void testClip() {
-        Show rickAndMorty = ShowFactory.pullShow("C:\\Users\\sjim_\\Documents\\Series\\Rick and Morty S04");
-        mediaController.playEpisode(rickAndMorty.getEpisodes().get(5));
-    }
-
 }
