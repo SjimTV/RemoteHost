@@ -4,6 +4,8 @@ import com.sjimtv.showStructure.Episode;
 import uk.co.caprica.vlcj.player.base.*;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
+import java.io.File;
+
 public class MediaController {
     private final EmbeddedMediaPlayer mediaPlayer;
     private final MediaApi mediaApi;
@@ -25,6 +27,22 @@ public class MediaController {
 
     public void playEpisode(Episode episode) {
         playMedia(episode.getPath());
+        setSubtitles(episode.getSubtitlePath());
+    }
+
+    private void setSubtitles(String subtitlePath){
+        File subtitleFile = new File(subtitlePath);
+        if (subtitleFile.exists()) {
+            System.out.println("Subtitles added " + subtitlePath);
+            if (mediaPlayer.subpictures().setSubTitleFile(subtitleFile)){
+                System.out.println("Suceeded!");
+            } else {
+                System.out.println("FAILED!!!");
+            }
+
+        }
+        else System.out.println("Cant find subtitle : " + subtitlePath);
+
     }
 
     public void pause() {
@@ -38,6 +56,7 @@ public class MediaController {
     public void stop() {
         controlApi.stop();
     }
+
 
     public void setRepeat(boolean isRepeat) {
         controlApi.setRepeat(isRepeat);

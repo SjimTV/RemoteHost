@@ -7,6 +7,8 @@ public class Episode {
 
     private double duration;
 
+    private String subtitlePath;
+
     public Episode(){
         // Empty Constructor for JSON Parsing
     }
@@ -39,5 +41,13 @@ public class Episode {
 
     public double getDuration() {
         return duration;
+    }
+
+    public String getSubtitlePath() {
+        return subtitlePath;
+    }
+
+    public void setSubtitlePath(String subtitlePath) {
+        this.subtitlePath = subtitlePath;
     }
 }
