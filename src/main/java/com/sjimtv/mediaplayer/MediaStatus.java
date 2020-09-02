@@ -9,24 +9,29 @@ public class MediaStatus {
     private final StatusApi statusApi;
     private final InfoApi infoApi;
 
+    private Status status;
+
     public MediaStatus(EmbeddedMediaPlayer mediaPlayer){
         this.mediaPlayer = mediaPlayer;
         statusApi = mediaPlayer.status();
         infoApi = mediaPlayer.media().info();
+
+        status = new Status();
+    }
+
+    public Status getStatus(){
+        status.setIsPaused(!statusApi.isPlaying());
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public float getPosition(){
         return (float) statusApi.time() / statusApi.length();
     }
 
-    public String getPathOfCurrentPlaying(){
-        try {
-            return infoApi.mrl();
-        } catch (NullPointerException e){
-            return "MRL Unavailable";
-        }
-
-    }
 
     public boolean isPlaying() {
         return statusApi.isPlaying();

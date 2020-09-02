@@ -1,10 +1,9 @@
 package com.sjimtv.server;
 
 import com.sjimtv.App;
-import com.sjimtv.filemanager.ShowFactory;
-import com.sjimtv.mediaplayer.MediaController;
 import com.sjimtv.showStructure.Episode;
 import com.sjimtv.showStructure.Shows;
+import com.sjimtv.mediaplayer.Status;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -30,4 +29,12 @@ public class RestApiController {
         App.mediaController.playEpisode(episode);
         return episode;
     }
+
+    @PostMapping("/status")
+    public Status updateStatus(@RequestBody Status updateStatus) throws InterruptedException {
+        App.mediaController.updateStatus(updateStatus);
+        Thread.sleep(200);
+        return App.mediaStatus.getStatus();
+    }
+
 }
