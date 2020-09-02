@@ -68,6 +68,7 @@ public class Server extends Thread {
             if (isClientDead(message)) close();
             return message;
         } catch (IOException e) {
+            if (e.getMessage().equals("Connection reset")) close();
             System.out.println("Error reading message: " + e.getMessage());
             return null;
         }
