@@ -31,7 +31,7 @@ public class RestApiController {
         return App.mediaStatus.getStatus();
     }
 
-    @GetMapping("/volume")
+    @GetMapping("/changeVolume")
     public float changeVolume(@RequestParam(defaultValue = "-1f") float volume){
         if (volume != -1 && volume <= 1){
             App.mediaController.setVolume(volume);
@@ -44,6 +44,22 @@ public class RestApiController {
         }
 
         return App.mediaStatus.getVolume();
+    }
+
+    @GetMapping("/adjustVolume")
+    public float adjustVolume(@RequestParam boolean adjustUp){
+        if (adjustUp) App.mediaController.adjustVolume(5);
+        else App.mediaController.adjustVolume(-5);
+
+        waitForMediaPlayer();
+        return App.mediaStatus.getVolume();
+    }
+
+    @GetMapping("/skipTime")
+    public float skipTime(@RequestParam boolean forward){
+        App.mediaController.skipTime(forward);
+        waitForMediaPlayer();
+        return App.mediaStatus.getPosition();
     }
 
 

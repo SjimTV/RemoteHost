@@ -16,11 +16,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
+import javafx.scene.robot.Robot;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Random;
 
 
 import org.springframework.boot.SpringApplication;
@@ -79,7 +81,7 @@ public class App extends Application {
         mediaStatus = mediaManager.getMediaStatus();
     }
 
-    private void setBackgroundClip(){
+    private void setBackgroundClip() {
         String path = "/background.mov";
         mediaController.playMedia(path);
         mediaController.setRepeat(true);
