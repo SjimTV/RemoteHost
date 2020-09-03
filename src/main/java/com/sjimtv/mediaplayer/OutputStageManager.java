@@ -81,7 +81,7 @@ public class OutputStageManager {
     }
 
     private void setStageAsViewPort(Stage stage) {
-        stage.initStyle(StageStyle.UTILITY);
+        stage.initStyle(StageStyle.DECORATED);
         stage.setHeight(viewPortBounds.getHeight());
         stage.setWidth(viewPortBounds.getWidth());
     }

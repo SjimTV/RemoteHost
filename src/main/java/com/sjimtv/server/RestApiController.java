@@ -9,32 +9,44 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class RestApiController {
 
-
-    @GetMapping("/pause")
-    public String pause() throws InterruptedException {
-        App.mediaController.pause();
-
-        Thread.sleep(200); // mediastatus call is faster than pausing/playing media
-        if (App.mediaStatus.isPlaying()) return "playing";
-        else return "paused";
+    private static void waitForMediaPlayer(){
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e){
+            System.out.println("WHO WAKES ME FROM MY SLEEP!!");
+        }
     }
+
 
     @GetMapping("/pull_shows")
     public Shows pullShows(){
         return App.shows;
     }
 
-    @PostMapping("/play_episode")
-    public Episode playEpisode(@RequestBody Episode episode){
-        App.mediaController.playEpisode(episode);
-        return episode;
-    }
 
     @PostMapping("/status")
-    public Status updateStatus(@RequestBody Status updateStatus) throws InterruptedException {
+    public Status updateStatus(@RequestBody Status updateStatus) {
         App.mediaController.updateStatus(updateStatus);
-        Thread.sleep(200);
+        waitForMediaPlayer();
         return App.mediaStatus.getStatus();
     }
+
+    @GetMapping("/volume")
+    public float changeVolume(@RequestParam(defaultValue = "-1f") float volume){
+        if (volume != -1 && volume <= 1){
+            App.mediaController.setVolume(volume);
+            waitForMediaPlayer();
+        }
+
+        if (volume > 1) {
+            App.mediaController.adjustVolume((int)volume);
+            waitForMediaPlayer();
+        }
+
+        return App.mediaStatus.getVolume();
+    }
+
+
+
 
 }

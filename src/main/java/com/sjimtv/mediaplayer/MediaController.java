@@ -80,7 +80,18 @@ public class MediaController {
     public void setVolume(float volume) {
         int volumePercentage = (int) (volume * 100);
         audioApi.setVolume(volumePercentage);
+        displayMessage("Volume " + volumePercentage);
     }
+
+    public void adjustVolume(int adjustPercentage){
+        int adjustedVolume = ((int) App.mediaStatus.getVolume() * 100) + adjustPercentage;
+        if (adjustedVolume < 0) adjustedVolume = 0;
+        if (adjustedVolume > 100) adjustedVolume = 100;
+        audioApi.setVolume(adjustedVolume);
+        displayMessage("Volume " + adjustedVolume);
+
+    }
+
 
     public void setPosition(float position) {
         controlApi.setPosition(position);
