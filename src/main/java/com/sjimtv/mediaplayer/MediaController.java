@@ -62,8 +62,6 @@ public class MediaController {
 
     public void setPause(boolean isPause) {
         controlApi.setPause(isPause);
-        if (isPause) displayMessage("Paused");
-        else displayMessage("Play");
     }
 
     public void setRepeat(boolean isRepeat) {

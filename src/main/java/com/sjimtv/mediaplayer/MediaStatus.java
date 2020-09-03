@@ -1,5 +1,6 @@
 package com.sjimtv.mediaplayer;
 
+import com.sjimtv.App;
 import uk.co.caprica.vlcj.media.InfoApi;
 import uk.co.caprica.vlcj.player.base.AudioApi;
 import uk.co.caprica.vlcj.player.base.StatusApi;
@@ -13,13 +14,15 @@ public class MediaStatus {
 
     private Status status;
 
+    private boolean isPositionSubscribed;
+
     public MediaStatus(EmbeddedMediaPlayer mediaPlayer){
         this.mediaPlayer = mediaPlayer;
         statusApi = mediaPlayer.status();
         infoApi = mediaPlayer.media().info();
         audioApi = mediaPlayer.audio();
 
-        status = new Status();
+        status = Status.initialize();
     }
 
     public Status getStatus(){
@@ -42,6 +45,32 @@ public class MediaStatus {
     public float getVolume(){
         return (float) mediaPlayer.audio().volume() / 100;
 
+    }
+
+    public void subscribePositionListener(){
+        if (isPositionSubscribed) return;
+        isPositionSubscribed = true;
+        System.out.println("Subscribed position listener");
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                try {
+                    while (isPositionSubscribed) {
+                        App.server.sendMessage("POS:" + getPosition());
+                        Thread.sleep(200);
+                    }
+                }catch (InterruptedException e){
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+
+    }
+
+    public void unsubscribePositionListener(){
+        System.out.println("Unsubscribed position listener");
+        isPositionSubscribed = false;
     }
 
 }

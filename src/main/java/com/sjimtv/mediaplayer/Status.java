@@ -11,6 +11,14 @@ public class Status {
 
     }
 
+    public static Status initialize(){
+        Status status = new Status();
+        status.showIndex = -1;
+        status.episodeNumber = -1;
+        status.isPaused = true;
+        return status;
+    }
+
     public void setNewMedia(boolean newMedia) {
         this.newMedia = newMedia;
     }

@@ -24,10 +24,15 @@ public class RestApiController {
     }
 
 
-    @PostMapping("/status")
+    @PostMapping("/status/update")
     public Status updateStatus(@RequestBody Status updateStatus) {
         App.mediaController.updateStatus(updateStatus);
         waitForMediaPlayer();
+        return App.mediaStatus.getStatus();
+    }
+
+    @GetMapping("/status/get")
+    public Status getStatus() {
         return App.mediaStatus.getStatus();
     }
 
@@ -60,6 +65,19 @@ public class RestApiController {
         App.mediaController.skipTime(forward);
         waitForMediaPlayer();
         return App.mediaStatus.getPosition();
+    }
+
+    @GetMapping("/position")
+    public float setPosition(@RequestParam float position){
+        App.mediaController.setPosition(position);
+        waitForMediaPlayer();
+        return App.mediaStatus.getPosition();
+    }
+
+    @GetMapping("/positionListener")
+    public void subscribe(@RequestParam boolean subscribe){
+        if (subscribe) App.mediaStatus.subscribePositionListener();
+        else App.mediaStatus.unsubscribePositionListener();
     }
 
 
