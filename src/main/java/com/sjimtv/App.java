@@ -52,12 +52,14 @@ public class App extends Application {
         initializeVLCPlayer(outputStageManager.getOutputView());
         setBackgroundClip();
 
-        showControlStage(stage);
+
 
         server = new Server(new ServerCommunicator());
         server.start();
 
         initializeShows();
+        showControlStage(stage);
+
     }
 
     private void showOutputStage() {

@@ -3,21 +3,26 @@ package com.sjimtv.control;
 import com.sjimtv.App;
 import com.sjimtv.mediaplayer.MediaController;
 import com.sjimtv.mediaplayer.MediaStatus;
+import com.sjimtv.showStructure.Episode;
+import com.sjimtv.showStructure.Episodes;
+import com.sjimtv.showStructure.Show;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.util.Duration;
-import uk.co.caprica.vlcj.player.base.AudioApi;
-import uk.co.caprica.vlcj.player.base.ControlsApi;
-import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class ControlScene implements Initializable {
+
     private MediaController mediaController;
     private MediaStatus mediaStatus;
 
@@ -27,16 +32,21 @@ public class ControlScene implements Initializable {
 
     private boolean isTimelineDragged = false;
 
+    @FXML
+    private ListView<Show> showList, episodeList;
+
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         mediaController = App.mediaController;
         mediaStatus = App.mediaStatus;
 
-
         initializeSeekbar();
         initializeSeekbarTimeline();
         initializeVolumebar();
+        initializeShowList();
+
     }
 
     private void initializeSeekbar(){
@@ -73,6 +83,26 @@ public class ControlScene implements Initializable {
         volumebar.setOnMouseDragged(mouseEvent -> {
             mediaController.setVolume((float) (volumebar.getValue() / 100));
         });
+    }
+
+    private void initializeShowList(){
+        ObservableList<Show> showObservableList = FXCollections.observableArrayList(App.shows);
+
+        showList.setItems(showObservableList);
+        showList.setCellFactory(param -> new ListCell<Show>() {
+            @Override
+            protected void updateItem(Show show, boolean empty) {
+                super.updateItem(show, empty);
+
+                if (empty || show == null || show.getName() == null) {
+                    setText(null);
+                } else {
+                    setText(show.getName());
+                }
+            }
+        });
+
+
     }
 
     public void playPauseClicked(ActionEvent actionEvent) {
