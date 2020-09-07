@@ -46,7 +46,12 @@ public class ShowFactory {
             System.out.println("ShowInfo not available, making ShowInfo");
             return createShow(showDirectory);
         }
+    }
 
+    public static void rebuildShow(String pathShowDirectory, String imdbID){
+        File showDirectory = new File(pathShowDirectory);
+        if (!showDirectory.exists() || !showDirectory.isDirectory()) throw new Error("Show directory does not exist");
+        createShow(showDirectory, imdbID, true);
     }
 
     private static Show loadShow(File showDirectory) {
@@ -58,15 +63,12 @@ public class ShowFactory {
         }
     }
 
-    private static Show createShow(File showDirectory) {
+    private static Show createShow(File showDirectory, String imdbID, boolean forceDownload) {
         String showPath = showDirectory.getAbsolutePath();
         String showName = showDirectory.getName();
         int showSeason = getSeason(showName);
 
-        String imdbID = IMDBScraper.getIMDBId(showName);
-
-        String showImage = getShowImage(showPath, imdbID);
-
+        String showImage = getShowImage(showPath, imdbID, forceDownload);
 
         File[] mediaFiles = listMediaFiles(showDirectory);
         Episodes episodes;
@@ -76,12 +78,19 @@ public class ShowFactory {
         String[] mediaTypeFlags = findMediaTypeFlags(episodes.get(1).getPath());
         Show show = new Show(showPath, showName, showSeason, showImage, imdbID, mediaTypeFlags, episodes);
 
-        if (!SubtitleManager.subsDirectoryExist(show.getPath())) generateSubtitles(show);
+        if (forceDownload || !SubtitleManager.subsDirectoryExist(show.getPath())) generateSubtitles(show);
         generateSubtitlePaths(show);
 
         ShowInfoManager.saveShowInfo(show);
 
         return show;
+    }
+
+    private static Show createShow(File showDirectory) {
+        String showName = showDirectory.getName();
+        String imdbID = IMDBScraper.getIMDBId(showName);
+        return createShow(showDirectory, imdbID, false);
+
     }
 
 
@@ -164,8 +173,8 @@ public class ShowFactory {
         }
     }
 
-    private static String getShowImage(String showPath, String imdbID) {
-        if (!ShowInfoManager.showImageExists(showPath)) createShowImage(showPath, imdbID);
+    private static String getShowImage(String showPath, String imdbID, boolean forceDownload) {
+        if (forceDownload || !ShowInfoManager.showImageExists(showPath)) createShowImage(showPath, imdbID);
         return ShowInfoManager.loadShowImage(showPath);
     }
 

@@ -1,6 +1,7 @@
 package com.sjimtv.control;
 
 import com.sjimtv.App;
+import com.sjimtv.filemanager.ShowFactory;
 import com.sjimtv.mediaplayer.MediaController;
 import com.sjimtv.mediaplayer.MediaStatus;
 import com.sjimtv.showStructure.Episode;
@@ -11,11 +12,13 @@ import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextInputDialog;
 import javafx.util.Duration;
 
 import java.net.URL;
@@ -110,4 +113,15 @@ public class ControlScene implements Initializable {
     }
 
 
+    public void rebuildShow(ActionEvent actionEvent) {
+        if (showList.getSelectionModel().getSelectedIndex() == -1) return;
+        Show selectedShow = App.shows.get(showList.getSelectionModel().getSelectedIndex());
+        TextInputDialog inputDialog = new TextInputDialog();
+        inputDialog.setHeaderText("Enter IMDB ID for " + selectedShow.getName());
+        inputDialog.showAndWait();
+        String imdbID = inputDialog.getEditor().getText();
+
+        ShowFactory.rebuildShow(selectedShow.getPath(), imdbID);
+
+    }
 }
