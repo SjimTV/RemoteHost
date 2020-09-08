@@ -6,6 +6,8 @@ import com.sjimtv.showStructure.Shows;
 import com.sjimtv.mediaplayer.Status;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @RestController
 public class RestApiController {
 
@@ -79,6 +81,13 @@ public class RestApiController {
         if (subscribe) App.mediaStatus.subscribePositionListener();
         else App.mediaStatus.unsubscribePositionListener();
     }
+
+    @GetMapping("/shutdown")
+    public void shutdown() throws IOException {
+        Runtime.getRuntime().exec("shutdown -s");
+    }
+
+
 
 
 
