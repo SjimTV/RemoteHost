@@ -90,6 +90,11 @@ public class MediaController {
         controlApi.setPosition(position);
     }
 
+    public void setSubtitleDelay(float subtitleDelaySeconds){
+        long subtitleDelayMicroSeconds = (long) (subtitleDelaySeconds * 1000000);
+        mediaPlayer.subpictures().setDelay(subtitleDelayMicroSeconds);
+    }
+
     public void skipTime(boolean forward){
         float currentPosition = App.mediaStatus.getPosition();
         if (forward) currentPosition += 0.01;

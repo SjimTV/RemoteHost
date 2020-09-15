@@ -82,6 +82,18 @@ public class RestApiController {
         else App.mediaStatus.unsubscribePositionListener();
     }
 
+    @GetMapping("/getSubtitleDelay")
+    public float getSubtitleDelay(){
+        return App.mediaStatus.getSubtitleDelay();
+    }
+
+    @GetMapping("/setSubtitleDelay")
+    public float setSubtitleDelay(@RequestParam float subtitleDelaySeconds){
+        App.mediaController.setSubtitleDelay(subtitleDelaySeconds);
+        waitForMediaPlayer();
+        return App.mediaStatus.getSubtitleDelay();
+    }
+
     @GetMapping("/shutdown")
     public void shutdown() throws IOException {
         Runtime.getRuntime().exec("shutdown -s");

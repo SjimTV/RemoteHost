@@ -47,6 +47,11 @@ public class MediaStatus {
 
     }
 
+    public float getSubtitleDelay(){
+        float subtitleDelayMicroSeconds = mediaPlayer.subpictures().delay();
+        return subtitleDelayMicroSeconds / 1000000;
+    }
+
     public void subscribePositionListener(){
         if (isPositionSubscribed) return;
         isPositionSubscribed = true;
