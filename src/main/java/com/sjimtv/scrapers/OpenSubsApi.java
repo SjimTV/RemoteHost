@@ -35,9 +35,9 @@ public class OpenSubsApi {
         ArrayList<String> subtitleDownloadLinks = new ArrayList<>();
 
         for (int episode = 1; episode <= episodeCount; episode++){
+            System.out.println(String.format("\nRequest download link %d/%d", episode, episodeCount));
             subtitleDownloadLinks.add(requestDownloadLink(show, episode));
             try {
-                System.out.println(String.format("\nRequest download link %d/%d", episode, episodeCount));
                 Thread.sleep(1000);
             } catch (InterruptedException e){
                 e.printStackTrace();
@@ -136,6 +136,12 @@ public class OpenSubsApi {
     private static JsonObject findBestSubtitle(JsonArray jsonArray, String[] mediaTypeFlag) throws Exception {
 
         if (jsonArray.isJsonNull()) throw new Exception("No Subtitles found!");
+
+        System.out.println("Filtering Subtitles from:");
+        for (JsonElement sub : jsonArray){
+           System.out.println(sub.getAsJsonObject().get("MovieReleaseName").getAsString());
+        }
+        System.out.println();
 
         if (mediaTypeFlag.length != 0){
             JsonArray filteredJsonArray = filterJsonByIdentifiers(jsonArray, mediaTypeFlag);
