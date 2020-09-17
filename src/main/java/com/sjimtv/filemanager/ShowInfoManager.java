@@ -3,6 +3,7 @@ package com.sjimtv.filemanager;
 
 import com.google.gson.Gson;
 import com.sjimtv.showStructure.Show;
+import com.sjimtv.showStructure.Shows;
 import com.sjimtv.utils.JsonConverter;
 import org.apache.commons.io.FileUtils;
 
@@ -22,6 +23,7 @@ public class ShowInfoManager {
     public static boolean showInfoExists(File showDirectory) {
         return new File(showDirectory, showInfoPath).exists();
     }
+
 
     public static void saveShowInfo(Show show) {
         String showInfo = JsonConverter.convertShowToJson(show);

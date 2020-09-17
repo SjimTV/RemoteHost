@@ -1,6 +1,7 @@
 package com.sjimtv.mediaplayer;
 
 import com.sjimtv.App;
+import com.sjimtv.filemanager.ShowInfoManager;
 import com.sjimtv.showStructure.Episode;
 import uk.co.caprica.vlcj.player.base.*;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
@@ -41,9 +42,12 @@ public class MediaController {
         displayMessage("Now Playing:\n" + episode.getName());
     }
 
-    public void playEpisode(int showIndex, int episode){
-        Episode ep = App.shows.get(showIndex).getEpisodes().get(episode);
-        playEpisode(ep);
+    public void playEpisode(int showIndex, int episodeNr){
+        Episode episode = App.shows.get(showIndex).getEpisodes().get(episodeNr);
+        episode.setViewedState("VIEWED");
+        ShowInfoManager.saveShowInfo(App.shows.get(showIndex));
+
+        playEpisode(episode);
     }
 
     private void setSubtitles(String subtitlePath){

@@ -6,6 +6,7 @@ public class Episode {
     private String name;
 
     private double duration;
+    private String viewedState;
 
     private String subtitlePath;
 
@@ -17,6 +18,9 @@ public class Episode {
         this.path = path;
         this.name = name;
         this.duration = duration;
+
+        viewedState = "NEW";
+
     }
 
     public String getPath() {
@@ -49,5 +53,13 @@ public class Episode {
 
     public void setSubtitlePath(String subtitlePath) {
         this.subtitlePath = subtitlePath;
+    }
+
+    public String getViewedState() {
+        return viewedState;
+    }
+
+    public void setViewedState(String viewedState) {
+        this.viewedState = viewedState;
     }
 }
