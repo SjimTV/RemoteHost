@@ -53,6 +53,12 @@ public class RestApiController {
         return App.mediaStatus.getVolume();
     }
 
+    @GetMapping("/setVolume")
+    public void setVolume(@RequestParam int volume){
+       App.mediaController.setVolume((float) volume / 100);
+
+    }
+
     @GetMapping("/adjustVolume")
     public float adjustVolume(@RequestParam boolean adjustUp){
         if (adjustUp) App.mediaController.adjustVolume(5);
