@@ -222,8 +222,8 @@ public class ShowFactory {
         Episodes episodes = show.getEpisodes();
         for (int episodeNumber : episodes.keySet()) {
             Episode episode = episodes.get(episodeNumber);
-            File subtitle = new File(SubtitleManager.getSubsPath(episode.getPath()));
-            if (subtitle.exists()) episode.setSubtitlePath(subtitle.getPath());
+            File subtitle = SubtitleManager.getEnglishSubtitle(episode.getPath());
+            if (subtitle != null) episode.setSubtitlePath(subtitle.getPath());
             else {
                 episode.setSubtitlePath("NO_SUBTITLE_FOUND");
                 System.out.println("Cant find subtitles for " + episode.getName());

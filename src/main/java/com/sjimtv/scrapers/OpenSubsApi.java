@@ -26,10 +26,9 @@ public class OpenSubsApi {
     private static final String API_SEARCH_SEASON = "season-";
     private static final String API_SEARCH_LANGUAGE = "sublanguageid-";
 
-    public static ArrayList<String> getSubtitleDownloadLinks(Show show) throws Exception {
+    private static final String NO_DL_LINKS_FOUND = "NO DOWNLOAD LINKS FOUND";
 
-        String imdbID = show.getImdbID();
-        int season = show.getSeason();
+    public static ArrayList<String> getSubtitleDownloadLinks(Show show) throws IOException{
         int episodeCount = show.getEpisodes().size();
 
         ArrayList<String> subtitleDownloadLinks = new ArrayList<>();
@@ -37,17 +36,12 @@ public class OpenSubsApi {
         for (int episode = 1; episode <= episodeCount; episode++){
             System.out.println(String.format("\nRequest download link %d/%d", episode, episodeCount));
             subtitleDownloadLinks.add(requestDownloadLink(show, episode));
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e){
-                e.printStackTrace();
-            }
+            sleep();
         }
         return subtitleDownloadLinks;
     }
 
-
-    private static String requestDownloadLink (Show show, int episode) throws Exception {
+    private static String requestDownloadLink (Show show, int episode) throws IOException{
         URL url = buildSearchUrl(show, episode, "eng");
 
         assert url != null;
@@ -58,6 +52,7 @@ public class OpenSubsApi {
         JsonArray subtitleArray = JsonParser.parseReader(new InputStreamReader((InputStream) request.getContent())).getAsJsonArray();
 
         String downloadLink;
+        if (subtitleArray.size() == 0) return NO_DL_LINKS_FOUND;
         if (subtitleArray.size() == 1)  downloadLink = getDownloadlinkFromJson(subtitleArray.get(0).getAsJsonObject());
         else downloadLink = getDownloadlinkFromJson(findBestSubtitle(subtitleArray, show.getMediaTypeFlags()));
 
@@ -106,13 +101,16 @@ public class OpenSubsApi {
 
         int counter = 1;
         for (String subtitleDownloadLink : subtitleDownloadLinks){
-            subtitles.add(downloadSubtitle(new URL(subtitleDownloadLink)));
-            try {
+
+            if (subtitleDownloadLink.equals(NO_DL_LINKS_FOUND)) {
+                subtitles.add("EMPTY");
+                System.out.println(String.format("Can't find subtitle %d/%d", counter++, subtitleDownloadLinks.size()));
+            } else {
+                subtitles.add(downloadSubtitle(new URL(subtitleDownloadLink)));
                 System.out.println(String.format("Downloaded subtitle %d/%d", counter++, subtitleDownloadLinks.size()));
-                Thread.sleep(1000);
-            } catch (InterruptedException e){
-                e.printStackTrace();
             }
+            sleep();
+
         }
         return subtitles;
     }
@@ -133,10 +131,7 @@ public class OpenSubsApi {
 
     }
 
-    private static JsonObject findBestSubtitle(JsonArray jsonArray, String[] mediaTypeFlag) throws Exception {
-
-        if (jsonArray.isJsonNull()) throw new Exception("No Subtitles found!");
-
+    private static JsonObject findBestSubtitle(JsonArray jsonArray, String[] mediaTypeFlag){
         System.out.println("Filtering Subtitles from:");
         for (JsonElement sub : jsonArray){
            System.out.println(sub.getAsJsonObject().get("MovieReleaseName").getAsString());
@@ -182,5 +177,13 @@ public class OpenSubsApi {
 
     private static String getDownloadlinkFromJson(JsonObject subtitleJson){
         return subtitleJson.get("SubDownloadLink").getAsString();
+    }
+
+    private static void sleep(){
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e){
+            e.printStackTrace();
+        }
     }
 }
